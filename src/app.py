@@ -18,8 +18,8 @@ class Screensaver:
         self.toggle_fullscreen()
 
     def bind_keys(self):
-        self.tk.bind("<F11>", self.toggle_fullscreen)
-        self.tk.bind("<Escape>", self.exit)
+        for window in self.windows:
+            window.bind("<Escape>", self.exit)
 
     def render(self):
         displays = get_display_sizes_and_position()
@@ -41,6 +41,9 @@ class Screensaver:
                 (display.width, display.height), (display.x, display.y)
             )
             self.windows.append(new_window)
+        
+        for window in self.windows:
+            window.configure(bg='black')
 
     def render_extra_monitor(self, size, position):
         new_window = Toplevel(self.tk)
@@ -55,7 +58,7 @@ class Screensaver:
             window.config(cursor="none")
 
     def toggle_fullscreen(self, event=None):
-        self.state = not self.state  # Just toggling the boolean
+        self.state = not self.state
         for window in self.windows:
             window.attributes("-fullscreen", self.state)
         return "break"
