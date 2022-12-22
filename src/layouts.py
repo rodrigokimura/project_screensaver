@@ -62,11 +62,11 @@ class Clock(TkinterLayout):
         self.frame.configure(bg="black")
         self.frame.pack_forget()
 
-        self.window.after(500, self._adjust_size)
-        self.window.after(100, self._update_clock)
+        self._adjust_size(size)
+        self._update_clock()
 
-    def _adjust_size(self):
-        w, h = self.window.winfo_width(), self.window.winfo_height()
+    def _adjust_size(self, display_size):
+        w, h = display_size
         w = 0.7 * w
 
         proportion = self.font.metrics("linespace") / self.font.measure("00:00:00")
@@ -98,7 +98,7 @@ class Calendar(TkinterLayout):
         self.frame.pack_forget()
 
         self.window.configure(bg="black")
-        self.window.after(100, self._adjust_size)
+        self._adjust_size(size)
 
     def _populate_calendar(self):
 
@@ -137,8 +137,9 @@ class Calendar(TkinterLayout):
             width=2,
         )
 
-    def _adjust_size(self):
-        h = self.window.winfo_height() * 0.7 / 2 / 5
+    def _adjust_size(self, display_size):
+        _, h = display_size
+        h = h * 0.7 / 2 / 5
         self.font.config(size=-int(h))
         self.frame.pack(expand=1)
         for l in self.labels:
