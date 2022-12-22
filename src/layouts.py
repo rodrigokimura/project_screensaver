@@ -1,8 +1,9 @@
+import datetime
 import time
 from abc import ABC, abstractmethod
 from tkinter import BOTH, Frame, Label, Misc, TclError, Toplevel
 from tkinter.font import Font
-from typing import Tuple
+from typing import List, Tuple
 
 
 class Layout(ABC):
@@ -46,22 +47,15 @@ class SolidColor(TkinterLayout):
 
 
 class Clock(TkinterLayout):
-    def __init__(self) -> None:
-        super().__init__()
-
     def configure(self, master: Misc, size: Tuple[int, int], position: Tuple[int, int]):
         super().configure(master, size, position)
 
         self.font = Font(family="Cascadia Code")
-
-        f = Frame(self.window)
-        f.pack(fill=BOTH, expand=1)
-        f.configure(bg="black")
-
         self.font.config(size=100)
-        self.label = Label(f, text="...", fg="white", bg="black", font=self.font)
 
+        self.label = Label(self.window, text="", fg="white", bg="black", font=self.font)
         self.label.pack(fill=BOTH, expand=1)
+
         self.window.configure(bg="black")
 
         self.window.after(1000, self._adjust_size)
@@ -78,9 +72,72 @@ class Clock(TkinterLayout):
             else:
                 fits = True
 
-        self.label.configure(font=self.font)
-
     def _update_clock(self):
         now = time.strftime("%H:%M:%S")
         self.label.configure(text=now)
         self.window.after(1000, self._update_clock)
+
+
+class Calendar(TkinterLayout):
+    labels: List[Label] = []
+
+    def configure(self, master: Misc, size: Tuple[int, int], position: Tuple[int, int]):
+        super().configure(master, size, position)
+
+        self.font = Font(family="Cascadia Code")
+        self.font.config(size=100)
+
+        self.frame = Frame(self.window)
+        self.frame.pack(expand=1)
+
+        self._populate_calendar()
+
+        self.frame.configure(bg="black")
+        self.frame.pack_forget()
+
+        self.window.configure(bg="black")
+        self.window.after(1000, self._adjust_size)
+
+    def _populate_calendar(self):
+
+        first_day_of_month = self._get_first_day_of_month()
+        first_date_to_display = first_day_of_month - datetime.timedelta(
+            days=self._get_weekday(first_day_of_month)
+        )
+
+        for i in range(5 * 7):
+            c = i % 7
+            r = i // 7
+            date = first_date_to_display + datetime.timedelta(days=i)
+            l = self._date_label(str(date.day))
+            l.grid(row=r, column=c, padx=0, pady=0)
+            if date.month != first_day_of_month.month:
+                l.configure(fg="grey")
+            if date == datetime.date.today():
+                l.configure(fg="red")
+            self.labels.append(l)
+
+    def _get_weekday(self, date: datetime.date):
+        return date.weekday()
+
+    def _get_first_day_of_month(self):
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        return first
+
+    def _date_label(self, text: str):
+        return Label(
+            self.frame,
+            text=text,
+            fg="white",
+            bg="black",
+            font=self.font,
+            width=2,
+        )
+
+    def _adjust_size(self):
+        h = self.window.winfo_height() * 0.7 / 2 / 5
+        self.font.config(size=-int(h))
+        self.frame.pack(expand=1)
+        for l in self.labels:
+            l.configure(padx=h / 2, pady=h / 2)

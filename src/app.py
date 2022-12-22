@@ -1,7 +1,7 @@
 from tkinter import Tk, Toplevel
 from typing import List, Union
 
-from layouts import Clock, Layout, SolidColor
+from layouts import Calendar, Clock, Layout, SolidColor
 from utils import get_display_sizes_and_position
 
 
@@ -31,5 +31,5 @@ class Screensaver:
 
 
 if __name__ == "__main__":
-    w = Screensaver(layouts=[SolidColor("black"), Clock(), SolidColor("black")])
+    w = Screensaver(layouts=[SolidColor("black"), Clock(), Calendar()])
     w.start()
