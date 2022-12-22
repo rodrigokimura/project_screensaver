@@ -53,24 +53,27 @@ class Clock(TkinterLayout):
         self.font = Font(family="Cascadia Code")
         self.font.config(size=100)
 
-        self.label = Label(self.window, text="", fg="white", bg="black", font=self.font)
+        self.frame = Frame(self.window)
+
+        self.label = Label(self.frame, text="", fg="white", bg="black", font=self.font)
         self.label.pack(fill=BOTH, expand=1)
 
         self.window.configure(bg="black")
+        self.frame.configure(bg="black")
+        self.frame.pack_forget()
 
-        self.window.after(1000, self._adjust_size)
-        self.window.after(1000, self._update_clock)
+        self.window.after(500, self._adjust_size)
+        self.window.after(100, self._update_clock)
 
     def _adjust_size(self):
         w, h = self.window.winfo_width(), self.window.winfo_height()
-        w = 0.8 * w
-        fits = False
-        while not fits:
-            self.font.config(size=int(h))
-            if self.font.measure("00:00:00") > w:
-                h -= 10
-            else:
-                fits = True
+        w = 0.7 * w
+
+        proportion = self.font.metrics("linespace") / self.font.measure("00:00:00")
+        h = w * proportion
+        self.font.config(size=-int(h))
+
+        self.frame.pack(expand=1)
 
     def _update_clock(self):
         now = time.strftime("%H:%M:%S")
@@ -88,7 +91,6 @@ class Calendar(TkinterLayout):
         self.font.config(size=100)
 
         self.frame = Frame(self.window)
-        self.frame.pack(expand=1)
 
         self._populate_calendar()
 
@@ -96,7 +98,7 @@ class Calendar(TkinterLayout):
         self.frame.pack_forget()
 
         self.window.configure(bg="black")
-        self.window.after(1000, self._adjust_size)
+        self.window.after(100, self._adjust_size)
 
     def _populate_calendar(self):
 
