@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, List, NamedTuple, Tuple
+from typing import List, NamedTuple, Tuple
 
 
 class Display(NamedTuple):
