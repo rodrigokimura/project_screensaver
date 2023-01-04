@@ -3,8 +3,7 @@ from typing import List, Union
 
 from layouts.base import Layout
 from layouts.calendar import Calendar
-from layouts.clock import Clock
-from layouts.solid_color import SolidColor
+from layouts.clock import AnalogClock, DigitalClock
 from utils import get_display_sizes_and_position
 
 
@@ -38,8 +37,8 @@ if __name__ == "__main__":
     screen_saver = Screensaver(
         layouts=[
             Calendar(backgroud_color),
-            Clock(backgroud_color),
-            SolidColor(backgroud_color),
+            DigitalClock(backgroud_color),
+            AnalogClock(backgroud_color),
         ]
     )
     screen_saver.start()
